@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terapias de Biomagnetismo</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background: #2ecc71;
+            color: white;
+            padding: 25px;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #0b5345;
+            font-size: 2rem;
+        }
+
+        p {
+            color: #1b4d3e;
+            font-size: 1.2rem;
+        }
+
+        button {
+            background-color: #27ae60;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 25px;
+        }
+
+        button:hover {
+            background-color: #1e8449;
+            transform: scale(1.05);
+        }
+
+        #formulario {
+            margin-top: 40px;
+            display: none;
+            background: white;
+            padding: 40px 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 15px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.15);
+            animation: aparecer 0.5s ease;
+        }
+
+        @keyframes aparecer {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        input, select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #27ae60;
+            width: 90%;
+            max-width: 350px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Terapias de Biomagnetismo
+</header>
+
+<div class="container">
+    <p>Agende su cita fácilmente sin necesidad de escribir por WhatsApp.</p>
+    <button id="agendar">Agende ahora</button>
+
+    <div id="formulario">
+        <h2>Agendar cita</h2>
+
+        <input type="text" id="nombre" placeholder="Su nombre" required><br>
+        <input type="email" id="correo" placeholder="Su correo" required><br>
+        <input type="date" id="fecha" required><br>
+
+        <select id="hora">
+            <option value="">Seleccione una hora</option>
+            <option>9:00 AM</option>
+            <option>10:00 AM</option>
+            <option>11:00 AM</option>
+            <option>12:00 PM</option>
+            <option>1:00 PM</option>
+            <option>2:00 PM</option>
+            <option>3:00 PM</option>
+            <option>4:00 PM</option>
+        </select><br>
+
+        <button id="enviar">Confirmar cita</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById("agendar").onclick = function () {
+        document.getElementById("formulario").style.display = "block";
+    };
+
+    document.getElementById("enviar").onclick = async function () {
+        let data = {
+            nombre: document.getElementById("nombre").value,
+            correo: document.getElementById("correo").value,
+            fecha: document.getElementById("fecha").value,
+            hora: document.getElementById("hora").value
+        };
+
+        if (!data.nombre || !data.correo || !data.fecha || !data.hora) {
+            alert("Por favor complete todos los campos.");
+            return;
+        }
+
+        let respuesta = await fetch("http://127.0.0.1:5000/enviar-cita", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+        let info = await respuesta.text();
+        alert(info);
+    };
+</script>
+
+</body>
+</html>
