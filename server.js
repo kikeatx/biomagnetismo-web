@@ -1,38 +1,50 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.post("/enviar-cita", async (req, res) => {
-    const { nombre, correo, fecha, hora } = req.body;
+    try {
+        const { nombre, correo, fecha, hora } = req.body;
 
-    let transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: "TU_CORREO@gmail.com",
-            pass: "TU_CONTRASEÑA_DE_APP"
+        if (!nombre || !correo || !fecha || !hora) {
+            return res.send("Faltan datos.");
         }
-    });
 
-    let mensaje = `
-    Nueva cita agendada:
+        let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
-    Nombre: ${nombre}
-    Email: ${correo}
-    Fecha: ${fecha}
-    Hora: ${hora}
-    `;
+        let mensaje = `
+Nueva cita agendada:
 
-    await transporter.sendMail({
-        from: "Agenda Biomagnetismo",
-        to: "TU_CORREO@gmail.com",
-        subject: "Nueva cita agendada",
-        text: mensaje
-    });
+Nombre: ${nombre}
+Email: ${correo}
+Fecha: ${fecha}
+Hora: ${hora}
+`;
 
-    res.send("Cita enviada correctamente. Nos pondremos en contacto.");
+        await transporter.sendMail({
+            from: "Agenda Biomagnetismo <biomagnetiterapia@gmail.com>",
+            to: "biomagnetiterapia@gmail.com",
+            subject: "Nueva cita agendada",
+            text: mensaje
+        });
+
+        res.send("Cita enviada correctamente. Nos pondremos en contacto.");
+    
+    } catch (error) {
+        console.error("ERROR EN EL ENVÍO:", error);
+        res.send("Error al enviar el correo: " + error.message);
+    }
 });
 
 app.listen(3000, () => {
